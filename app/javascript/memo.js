@@ -1,3 +1,19 @@
+// 投稿されたとき追加するHTML
+const buildHTML = (XHR) => {
+  const item = XHR.response.post;
+  const html = `
+    <div class="post">
+      <div class="post-date">
+        投稿日時：${item.created_at}
+      </div>
+      <div class="post-content">
+        ${item.content}
+      </div>
+    </div>
+  `;
+  return html;
+};
+
 function post (){
   // 投稿ボタンの要素をsubmitに格納
   const submit = document.getElementById("submit");
@@ -17,6 +33,19 @@ function post (){
     XHR.responseType = "json";
     // 送信
     XHR.send(formData);
+
+    XHR.onload = () => {
+      // 通信失敗
+      if (XHR.status != 200) {
+        alert(`Error ${XHR.status}: ${XHR.statusText}`)
+        return null;
+      };
+      // 通信成功
+      const list = document.getElementById("list");
+      const formText = document.getElementById("content");
+      list.insertAdjacentHTML("afterend", buildHTML(XHR));
+      formText.value = "";
+    };
   });
 };
 
